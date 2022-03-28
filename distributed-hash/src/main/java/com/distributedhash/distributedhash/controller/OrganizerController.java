@@ -13,8 +13,9 @@ public class OrganizerController {
     OrganizerService organizerService;
 
     @GetMapping("/{roolNo}")
-    public int registerStudent(@PathVariable String roolNo){
-        return organizerService.registerStudent(roolNo);
+    public Integer registerStudent(@PathVariable String roolNo){
+        System.out.println("rool no -------------- " + roolNo);
+        return Integer.valueOf(organizerService.registerStudent(roolNo));
     }
 
     @GetMapping("/success/{roolNo}/{hash}")

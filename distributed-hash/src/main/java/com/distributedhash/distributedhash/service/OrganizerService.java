@@ -16,6 +16,7 @@ public class OrganizerService {
     public void occupyBlock(String roolNo, String hash){
         studentRepository.occupyBlock(roolNo, hash);
     }
+
     public void freeBlock(int blockNumber){
         studentRepository.freeBlock(blockNumber);
     }

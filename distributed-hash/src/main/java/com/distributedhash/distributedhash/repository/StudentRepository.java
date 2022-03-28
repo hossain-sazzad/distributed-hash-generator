@@ -18,7 +18,7 @@ public class StudentRepository {
     public int addStudent(String roolNo){
         synchronized (this){
             int size = freeBlocks.size();
-            int randomNumber = ((int)Math.random()) % size;
+            int randomNumber = getRandomNumber(0,size);
             int occupiedBlock = freeBlocks.get(randomNumber);
             freeBlocks.remove(occupiedBlock);
             return occupiedBlock;
@@ -34,5 +34,9 @@ public class StudentRepository {
     }
     public void freeBlock(int blockNumber){
         freeBlocks.add(blockNumber);
+    }
+
+    private int getRandomNumber(int min, int max) {
+        return (int) ((Math.random() * (max - min)) + min);
     }
 }
