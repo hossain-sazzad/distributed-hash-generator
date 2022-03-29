@@ -2,10 +2,7 @@ package com.distributedhash.distributedhash.repository;
 
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -14,26 +11,37 @@ public class StudentRepository {
     public static int totalBlock = 1024;
     List<Integer> freeBlocks = IntStream.range(1,totalBlock+1).boxed().collect(Collectors.toList());
     Map<String, Set<String>> studentToHash = new HashMap<>();
+    Map<String, Set<String>> studentFailedBlock = new HashMap<>();
 
-    public int addStudent(String roolNo){
-        synchronized (this){
+    public String addStudent(String roolNo){
+        synchronized (freeBlocks){
             int size = freeBlocks.size();
             int randomNumber = getRandomNumber(0,size);
             int occupiedBlock = freeBlocks.get(randomNumber);
-            freeBlocks.remove(occupiedBlock);
-            return occupiedBlock;
+            freeBlocks.remove(randomNumber);
+            return Integer.toString(occupiedBlock);
         }
     }
 
     public void occupyBlock (String roolNo, String hash){
+        System.out.println("free blocks size "+ freeBlocks.size());
         if (studentToHash.containsKey(roolNo)){
             studentToHash.get(roolNo).add(hash);
         } else {
-            studentToHash.put(roolNo, Set.of(hash));
+            Set<String> hashes = new HashSet<>();
+            hashes.add(hash);
+            studentToHash.put(roolNo, hashes);
         }
     }
-    public void freeBlock(int blockNumber){
-        freeBlocks.add(blockNumber);
+    public void freeBlock(String roolNo, String blockNumber){
+        freeBlocks.add(Integer.parseInt(blockNumber));
+        if (studentFailedBlock.containsKey(roolNo)){
+            studentFailedBlock.get(roolNo).add(blockNumber);
+        } else {
+            Set<String> blocks = new HashSet<>();
+            blocks.add(blockNumber);
+            studentFailedBlock.put(roolNo, blocks);
+        }
     }
 
     private int getRandomNumber(int min, int max) {

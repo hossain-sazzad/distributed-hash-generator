@@ -9,7 +9,7 @@ public class OrganizerService {
     @Autowired
     StudentRepository studentRepository;
 
-    public int registerStudent(String roolNo){
+    public String registerStudent(String roolNo){
         return studentRepository.addStudent(roolNo);
     }
 
@@ -17,7 +17,7 @@ public class OrganizerService {
         studentRepository.occupyBlock(roolNo, hash);
     }
 
-    public void freeBlock(int blockNumber){
-        studentRepository.freeBlock(blockNumber);
+    public void freeBlock(String roolNo, String blockNumber){
+        studentRepository.freeBlock(roolNo, blockNumber);
     }
 }
