@@ -3,11 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="eb8d80ea-531d-4393-b325-7b0667bf9cdb" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/client/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/client/Client.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../distributed-hash/src/main/java/com/distributedhash/distributedhash/controller/OrganizerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../distributed-hash/src/main/java/com/distributedhash/distributedhash/controller/OrganizerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../distributed-hash/src/main/java/com/distributedhash/distributedhash/repository/StudentRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../distributed-hash/src/main/java/com/distributedhash/distributedhash/repository/StudentRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../distributed-hash/src/main/java/com/distributedhash/distributedhash/service/OrganizerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../distributed-hash/src/main/java/com/distributedhash/distributedhash/service/OrganizerService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +43,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../distributed-hash" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RunManager">
     <configuration name="Client" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
@@ -72,7 +68,8 @@
       <option name="presentableId" value="Default" />
       <updated>1648467158322</updated>
       <workItem from="1648553978490" duration="48000" />
-      <workItem from="1648554282401" duration="4599000" />
+      <workItem from="1648554282401" duration="4879000" />
+      <workItem from="1648641325221" duration="2774000" />
     </task>
     <servers />
   </component>

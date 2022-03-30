@@ -1,22 +1,59 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
+import java.time.Instant;
 
 public class Client {
+    static int[] counts = {1,2,4,8};
     public static void main(String[] args){
-        calculateHashForStudents(4);
+        File result = new File("result.txt");
+        try {
+            result.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for(int i : counts){
+            try {
+                FileWriter myWriter = new FileWriter(result, true);
+                myWriter.write("Client count ====================== "+ i + System.lineSeparator());
+                myWriter.close();
+            } catch (IOException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
+            Instant start = Instant.now();
+            calculateHashForStudents(i);
+            long seconds = Duration.between(start, Instant.now()).getSeconds();
+            try {
+                FileWriter myWriter = new FileWriter(result, true);
+                myWriter.write("Time ====================== "+ seconds + " secomds" + System.lineSeparator());
+                myWriter.close();
+            } catch (IOException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
+        }
     }
 
     public static void calculateHashForStudents(int studentCount){
+        Thread[] generatorThreads = new Thread[studentCount];
         for(int i = 1; i<= studentCount; i++){
             Hashgenerator hashgenerator = new Hashgenerator(100+i);
-            Thread generatorThread = new Thread(hashgenerator);
-            generatorThread.start();
+            generatorThreads[i-1] = new Thread(hashgenerator);
+            generatorThreads[i-1].start();
+        }
+        for(int i = 1; i<= studentCount; i++){
+            try {
+                generatorThreads[i-1].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
     public static void registerAndFindHash(String roolno) {
@@ -80,9 +117,15 @@ public class Client {
             }
             conn.disconnect();
         } catch (Exception e) {
-
             e.printStackTrace();
-
+        }
+        try {
+            FileWriter myWriter = new FileWriter("result.txt", true);
+            myWriter.write("client  "+ roolno + " " + hash + System.lineSeparator());
+            myWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
         }
     }
 
@@ -108,7 +151,6 @@ public class Client {
 
 class Hashgenerator implements Runnable {
     int roolNo;
-
     public Hashgenerator(int roolNo) {
         this.roolNo = roolNo;
     }
