@@ -9,13 +9,17 @@ import java.util.stream.IntStream;
 @Repository
 public class StudentRepository {
     public static int totalBlock = 1024;
-    List<Integer> freeBlocks = IntStream.range(1,totalBlock+1).boxed().collect(Collectors.toList());
+    List<Integer> freeBlocks;
     Map<String, Set<String>> studentToHash = new HashMap<>();
     Map<String, Set<String>> studentFailedBlock = new HashMap<>();
 
     public String addStudent(String roolNo){
         synchronized (freeBlocks){
             int size = freeBlocks.size();
+            if(size == 0){
+                System.out.println("ends free blocks");
+                return "end";
+            }
             int randomNumber = getRandomNumber(0,size);
             int occupiedBlock = freeBlocks.get(randomNumber);
             freeBlocks.remove(randomNumber);
@@ -44,6 +48,10 @@ public class StudentRepository {
         }
     }
 
+    public void initializeBlock(){
+        System.out.println("initializing..");
+        freeBlocks = IntStream.range(1,totalBlock+1).boxed().collect(Collectors.toList());
+    }
     private int getRandomNumber(int min, int max) {
         return (int) ((Math.random() * (max - min)) + min);
     }

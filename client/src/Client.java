@@ -11,16 +11,14 @@ import java.time.Instant;
 public class Client {
     static int[] counts = {1,2,4,8};
     public static void main(String[] args){
-        File result = new File("result.txt");
-        try {
-            result.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         for(int i : counts){
+            System.out.println("started running with " + i + " students");
+            System.out.println("Please wait, it will take some time");
+
+            File result = null;
             try {
-                FileWriter myWriter = new FileWriter(result, true);
+                result = new File("result"+i + ".txt");
+                FileWriter myWriter = new FileWriter(result);
                 myWriter.write("Client count ====================== "+ i + System.lineSeparator());
                 myWriter.close();
             } catch (IOException e) {
@@ -28,7 +26,8 @@ public class Client {
                 e.printStackTrace();
             }
             Instant start = Instant.now();
-            calculateHashForStudents(i);
+            start();
+            calculateHashForStudents(i, result);
             long seconds = Duration.between(start, Instant.now()).getSeconds();
             try {
                 FileWriter myWriter = new FileWriter(result, true);
@@ -38,13 +37,31 @@ public class Client {
                 System.out.println("An error occurred.");
                 e.printStackTrace();
             }
+            System.out.println("End running with " + i + " students");
         }
+        System.out.println("The end");
     }
 
-    public static void calculateHashForStudents(int studentCount){
+    public static void start(){
+        try {
+            URL url = new URL("http://localhost:9090/api/" + "start");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Accept", "application/json");
+
+            if (conn.getResponseCode() != 200) {
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + conn.getResponseCode());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    public static void calculateHashForStudents(int studentCount, File resultFile){
         Thread[] generatorThreads = new Thread[studentCount];
         for(int i = 1; i<= studentCount; i++){
-            Hashgenerator hashgenerator = new Hashgenerator(100+i);
+            Hashgenerator hashgenerator = new Hashgenerator(100+i, resultFile);
             generatorThreads[i-1] = new Thread(hashgenerator);
             generatorThreads[i-1].start();
         }
@@ -56,10 +73,10 @@ public class Client {
             }
         }
     }
-    public static void registerAndFindHash(String roolno) {
+    public static void registerAndFindHash(String roolno, File resultFile) {
         String output = "";
         try {
-            URL url = new URL("http://localhost:8080/api/" + roolno);
+            URL url = new URL("http://localhost:9090/api/" + roolno);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
@@ -72,18 +89,17 @@ public class Client {
             BufferedReader br = new BufferedReader(new InputStreamReader(
                     (conn.getInputStream())));
 
-            System.out.println("Output from Server .... \n");
             while ((output = br.readLine()) != null) {
-                System.out.println(output);
                 break;
             }
             conn.disconnect();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if(output.equals("end") || output.equals("")){
+        if(output.equals("end")){
             return;
         }
+        boolean isFound = false;
         for(int i = 0; i < 4194304; i++) {
             MessageDigest md5 = null;
             try {
@@ -96,17 +112,21 @@ public class Client {
 
             String s = "00"+ roolno.substring(roolno.length()-3, roolno.length());
             if(hash.substring(0,5).equals(s)){
-                sendSuccessRequest(roolno, hash);
-                registerAndFindHash(roolno);
+                isFound = true;
+                sendSuccessRequest(roolno, hash, resultFile);
+                break;
             }
         }
-        sendFailRequest(roolno, output);
+        if (!isFound){
+            sendFailRequest(roolno, output);
+        }
+        registerAndFindHash(roolno, resultFile);
     }
 
 
-    public static void sendSuccessRequest(String roolno, String hash){
+    public static void sendSuccessRequest(String roolno, String hash, File resultFile){
         try {
-            URL url = new URL("http://localhost:8080/api/success/" + roolno + "/" + hash);
+            URL url = new URL("http://localhost:9090/api/success/" + roolno + "/" + hash);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
@@ -120,7 +140,7 @@ public class Client {
             e.printStackTrace();
         }
         try {
-            FileWriter myWriter = new FileWriter("result.txt", true);
+            FileWriter myWriter = new FileWriter(resultFile, true);
             myWriter.write("client  "+ roolno + " " + hash + System.lineSeparator());
             myWriter.close();
         } catch (IOException e) {
@@ -131,7 +151,7 @@ public class Client {
 
     public static void sendFailRequest(String roolno, String blockNumber){
         try {
-            URL url = new URL("http://localhost:8080/api/success" + roolno + "/" + blockNumber);
+            URL url = new URL("http://localhost:9090/api/success/" + roolno + "/" + blockNumber);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
@@ -142,21 +162,22 @@ public class Client {
             }
             conn.disconnect();
         } catch (Exception e) {
-
             e.printStackTrace();
-
         }
     }
 }
 
 class Hashgenerator implements Runnable {
     int roolNo;
-    public Hashgenerator(int roolNo) {
+    File resultFile;
+
+    public Hashgenerator(int roolNo, File resultFile) {
         this.roolNo = roolNo;
+        this.resultFile = resultFile;
     }
 
     @Override
     public void run() {
-        Client.registerAndFindHash(Integer.toString(roolNo));
+        Client.registerAndFindHash(Integer.toString(roolNo), resultFile);
     }
 }

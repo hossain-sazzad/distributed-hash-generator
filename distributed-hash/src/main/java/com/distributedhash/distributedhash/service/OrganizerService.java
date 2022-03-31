@@ -20,4 +20,8 @@ public class OrganizerService {
     public void freeBlock(String roolNo, String blockNumber){
         studentRepository.freeBlock(roolNo, blockNumber);
     }
+
+    public void initializeBlock(){
+        studentRepository.initializeBlock();
+    }
 }

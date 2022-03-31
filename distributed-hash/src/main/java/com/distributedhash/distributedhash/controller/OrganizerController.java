@@ -14,7 +14,6 @@ public class OrganizerController {
 
     @GetMapping("/{roolNo}")
     public String registerStudent(@PathVariable String roolNo){
-        System.out.println("rool no -------------- " + roolNo);
         return organizerService.registerStudent(roolNo);
     }
 
@@ -25,5 +24,10 @@ public class OrganizerController {
     @GetMapping("/fail/{roolNo}/{blockNumber}")
     public void freeBlock(@PathVariable String roolNo, @PathVariable String blockNumber){
         organizerService.freeBlock(roolNo, blockNumber);
+    }
+
+    @GetMapping("/start")
+    public void restart(){
+        organizerService.initializeBlock();
     }
 }
